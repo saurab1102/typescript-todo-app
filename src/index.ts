@@ -70,17 +70,35 @@ function loadTasksFromFile(): void {
     }
 }
 
+function markTaskAsCompleted(id: number): void {
+    const task = tasks.find(task => task.id === id);
+    if (task) {
+        task.completed = true;
+        console.log(`Task with ID ${id} marked as completed.`);
+        saveTasksToFile();
+    }
+    else{
+        console.log(`Task with ID ${id} not found.`);
+    }
+}
+
 loadTasksFromFile();
 
-console.log("Initial tasks:");
 listTasks();
 addTask("Learn TypeScript");
 addTask("Build a To-Do App");
+
+
 console.log("\nAfter adding a task:");
+
 listTasks();
 
 removeTask(1);
+
 console.log("After removing a task:");
+
 listTasks();
 
-removeTask(3);
+markTaskAsCompleted(2);
+
+listTasks();
