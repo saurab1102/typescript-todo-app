@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import inquirer from "inquirer";
 
 interface Task{
     id: number
@@ -82,9 +83,86 @@ function markTaskAsCompleted(id: number): void {
     }
 }
 
-loadTasksFromFile();
+async function mainMenu(): Promise<void> {
+    const { action } = await inquirer.prompt([
+        {
+            type: "list",
+            name: "action",
+            message: "What would you like to do?",
+            choices: [
+                "Add a task",
+                "Remove a task",
+                "List all tasks",
+                "Mark a task as completed",
+                "Exit"
+            ]
+        }
+    ]);
 
-listTasks();
+    switch (action) {
+        case "Add a task":
+            await handleAddTask();
+            break;
+        case "Remove a task":
+            await handleRemoveTask();
+            break;
+        case "List all tasks":
+            await listTasks();
+            break;
+        case "Mark a task as completed":
+            await handleMarkTaskAsCompleted();
+            break;
+        case "Exit":
+            console.log("Goodbye!");
+            return;
+    }
+
+    await mainMenu();
+}
+
+async function handleAddTask(): Promise<void> {
+    const { description } = await inquirer.prompt([
+        {
+            type: "input",
+            name: "description",
+            message: "Enter the task description:",
+        }
+    ]);
+
+    if(description.trim()) {
+        addTask(description);
+    } else {
+        console.log("Task description cannot be empty.");
+    }
+}
+
+async function handleRemoveTask(): Promise<void> {
+    const { id } = await inquirer.prompt([
+        {
+            type: "number",
+            name: "id",
+            message: "Enter the task ID to remove:",
+        }
+    ]);
+
+    removeTask(id);
+}
+
+async function handleMarkTaskAsCompleted(): Promise<void> {
+    const { id } = await inquirer.prompt([
+        {
+            type: "number",
+            name: "id",
+            message: "Enter the task ID to mark as completed:",
+        }
+    ]);
+
+    markTaskAsCompleted(id);
+}
+
+loadTasksFromFile();
+mainMenu();
+/*listTasks();
 addTask("Learn TypeScript");
 addTask("Build a To-Do App");
 
@@ -101,4 +179,4 @@ listTasks();
 
 markTaskAsCompleted(2);
 
-listTasks();
+listTasks();*/
