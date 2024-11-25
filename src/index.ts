@@ -10,9 +10,19 @@ interface Task{
 const tasks: Task[] = [];
 
 function addTask(description: string): void {
+    if (!description.trim()) {
+        console.log("Error: Task description cannot be empty.");
+        return;
+    }
+
+    if (tasks.some(task => task.description === description.trim())){
+        console.log("Error: A task with this description already exists.");
+        return;
+    }
+
     const newTask: Task = {
         id: tasks.length > 0 ? tasks[tasks.length - 1].id + 1 : 1,
-        description,
+        description: description.trim(),
         completed: false,
     };
 
@@ -74,6 +84,10 @@ function loadTasksFromFile(): void {
 function markTaskAsCompleted(id: number): void {
     const task = tasks.find(task => task.id === id);
     if (task) {
+        if(task.completed) {
+            console.log(`Task with ID ${id} is already completed.`);
+            return;
+        }
         task.completed = true;
         console.log(`Task with ID ${id} marked as completed.`);
         saveTasksToFile();
@@ -145,11 +159,17 @@ async function handleAddTask(): Promise<void> {
 }
 
 async function handleRemoveTask(): Promise<void> {
+    if(tasks.length === 0) {
+        console.log("No tasks to remove.");
+        return;
+    }
+
     const { id } = await inquirer.prompt([
         {
             type: "number",
             name: "id",
             message: "Enter the task ID to remove:",
+            validate: input => tasks.some(task => task.id === input) || "Invalid task ID."
         }
     ]);
 
@@ -157,11 +177,17 @@ async function handleRemoveTask(): Promise<void> {
 }
 
 async function handleMarkTaskAsCompleted(): Promise<void> {
+    if (tasks.length === 0) {
+        console.log("No tasks to mark as completed.");
+        return;
+    }
+
     const { id } = await inquirer.prompt([
         {
             type: "number",
             name: "id",
             message: "Enter the task ID to mark as completed:",
+            validate: input => tasks.some(task => task.id ===input) || "Invalid ID"
         }
     ]);
 
