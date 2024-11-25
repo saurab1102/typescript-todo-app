@@ -44,7 +44,7 @@ function removeTask(id: number): void{
     saveTasksToFile();
 }
 
-function listTasks(): void {
+/*function listTasks(): void {
     if (tasks.length === 0) {
         console.log("No tasks found.");
         return;
@@ -57,6 +57,41 @@ function listTasks(): void {
         );
     });
     console.log("");
+}*/
+
+async function listTasksPaginated(): Promise<void> {
+    if (tasks.length === 0) {
+        console.log("Not tasks to display.");
+        return;
+    }
+
+    let currentPage = 0;
+    const pageSize = 5;
+
+    while (true){
+        console.log(`\nTasks (Page ${currentPage + 1}/${Math.ceil(tasks.length/pageSize)}):`);
+        const page = tasks.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+        page.forEach(task => 
+            console.log(`ID: ${task.id}, Description: "${task.description}", Completed: ${task.completed}`)
+        );
+
+        const { action } = await inquirer.prompt([
+            {
+                type: "list",
+                name: "action",
+                message: "Navigate tasks:",
+                choices: [
+                    currentPage > 0 ? "Previous Page" : undefined,
+                    (currentPage+1) * pageSize < tasks.length ? "Next Page" : undefined,
+                    "Exit Pagination"
+                ].filter(Boolean) as string[]
+            }
+        ]);
+
+        if(action === "Previous Page") currentPage--;
+        else if(action === "Next Page") currentPage++;
+        else break;
+    }
 }
 
 function saveTasksToFile(): void {
@@ -123,7 +158,7 @@ async function mainMenu(): Promise<void> {
             await handleRemoveTask();
             break;
         case "List all tasks":
-            await listTasks();
+            await listTasksPaginated();
             break;
         case "List completed tasks":
             listCompletedTasks();
