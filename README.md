@@ -1,5 +1,3 @@
-### Project Title
-
 # Command-Line To-Do List App
 
 A simple and interactive command-line To-Do list application built with **Node.js** and **TypeScript**. The app allows you to add, remove, list, and mark tasks as completed. Tasks are stored in a JSON file, making it persistent across sessions.
@@ -66,26 +64,6 @@ Once the app is running, you'll be presented with a menu to choose actions. The 
 - **List pending tasks**: View tasks that are not completed.
 - **Mark a task as completed**: Mark a task as completed by entering its ID.
 - **Sort tasks**: Sort tasks by ID, description, or completion status.
-
----
-
-### Example
-
-Here’s an example of how the app behaves:
-
-```bash
-What would you like to do?
-1. Add a task
-2. Remove a task
-3. List all tasks
-4. List completed tasks
-5. List pending tasks
-6. Mark a task as completed
-7. Sort tasks
-8. Exit
-```
-
-You can navigate between the tasks using **Previous Page** and **Next Page** for listing tasks with pagination.
 
 ---
 
