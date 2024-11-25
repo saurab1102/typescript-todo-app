@@ -161,10 +161,10 @@ async function mainMenu(): Promise<void> {
             await listTasksPaginated();
             break;
         case "List completed tasks":
-            listCompletedTasks();
+            await listCompletedTasksPaginated();
             break;
         case "List pending tasks":
-            listPendingTasks();
+            await listPendingTasksPaginated();
             break;
         case "Mark a task as completed":
             await handleMarkTaskAsCompleted();
@@ -229,7 +229,7 @@ async function handleMarkTaskAsCompleted(): Promise<void> {
     markTaskAsCompleted(id);
 }
 
-function listCompletedTasks(): void {
+/*function listCompletedTasks(): void {
     const completedTasks = tasks.filter(task => task.completed);
 
     if (completedTasks.length===0) {
@@ -240,9 +240,46 @@ function listCompletedTasks(): void {
     console.log("\nCompleted Tasks:");
     completedTasks.forEach(task => console.log(`ID: ${task.id}, Description: "${task.description}"`));
     console.log("");
+}*/
+
+async function listCompletedTasksPaginated(): Promise<void> {
+    const completedTasks = tasks.filter(task => task.completed);
+
+    if(completedTasks.length===0) {
+        console.log("No completed tasks found.");
+        return;
+    }
+
+    let currentPage = 0;
+    const pageSize = 5;
+
+    while(true) {
+        console.log(`\nCompleted Tasks (Page ${currentPage+1}/${Math.ceil(completedTasks.length/pageSize)}):`);
+        const page = completedTasks.slice(currentPage * pageSize, (currentPage+1)*pageSize);
+        page.forEach(completedTasks => 
+            console.log(`ID: ${completedTasks.id}, Description: "${completedTasks.description}"`)
+        );
+
+        const { action } = await inquirer.prompt([
+            {
+                type: "list",
+                name: "action",
+                message: "Navigate tasks:",
+                choices: [
+                    currentPage > 0 ? "Previous Page" : undefined,
+                    (currentPage+1)*pageSize < completedTasks.length ? "Next Page" : undefined,
+                    "Exit Pagination"
+                ].filter(Boolean) as string[]
+            }
+        ]);
+
+        if (action === "Previous Page") currentPage--;
+        else if (action === "Next Page") currentPage++;
+        else break;
+    }
 }
 
-function listPendingTasks(): void {
+/*function listPendingTasks(): void {
     const pendingTasks = tasks.filter(task => !task.completed);
 
     if(pendingTasks.length === 0) {
@@ -253,6 +290,43 @@ function listPendingTasks(): void {
     console.log("\nPending Tasks:");
     pendingTasks.forEach(task => console.log(`ID: ${task.id}, Description: "${task.description}"`));
     console.log("");
+}*/
+
+async function listPendingTasksPaginated(): Promise<void> {
+    const pendingTasks = tasks.filter(task => !task.completed);
+
+    if(pendingTasks.length===0) {
+        console.log("No pending tasks found.");
+        return;
+    }
+
+    let currentPage = 0;
+    const pageSize = 5;
+
+    while(true) {
+        console.log(`\nCompleted Tasks (Page ${currentPage+1}/${Math.ceil(pendingTasks.length/pageSize)}):`);
+        const page = pendingTasks.slice(currentPage * pageSize, (currentPage+1)*pageSize);
+        page.forEach(pendingTasks => 
+            console.log(`ID: ${pendingTasks.id}, Description: "${pendingTasks.description}"`)
+        );
+
+        const { action } = await inquirer.prompt([
+            {
+                type: "list",
+                name: "action",
+                message: "Navigate tasks:",
+                choices: [
+                    currentPage > 0 ? "Previous Page" : undefined,
+                    (currentPage+1)*pageSize < pendingTasks.length ? "Next Page" : undefined,
+                    "Exit Pagination"
+                ].filter(Boolean) as string[]
+            }
+        ]);
+
+        if (action === "Previous Page") currentPage--;
+        else if (action === "Next Page") currentPage++;
+        else break;
+    }
 }
 
 loadTasksFromFile();
