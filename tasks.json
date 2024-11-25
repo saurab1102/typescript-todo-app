@@ -3,5 +3,10 @@
     "id": 3,
     "description": "Test the App",
     "completed": false
+  },
+  {
+    "id": 4,
+    "description": "Push the App to GitHub.",
+    "completed": true
   }
 ]

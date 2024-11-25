@@ -93,6 +93,8 @@ async function mainMenu(): Promise<void> {
                 "Add a task",
                 "Remove a task",
                 "List all tasks",
+                "List completed tasks",
+                "List pending tasks",
                 "Mark a task as completed",
                 "Exit"
             ]
@@ -108,6 +110,12 @@ async function mainMenu(): Promise<void> {
             break;
         case "List all tasks":
             await listTasks();
+            break;
+        case "List completed tasks":
+            listCompletedTasks();
+            break;
+        case "List pending tasks":
+            listPendingTasks();
             break;
         case "Mark a task as completed":
             await handleMarkTaskAsCompleted();
@@ -158,6 +166,32 @@ async function handleMarkTaskAsCompleted(): Promise<void> {
     ]);
 
     markTaskAsCompleted(id);
+}
+
+function listCompletedTasks(): void {
+    const completedTasks = tasks.filter(task => task.completed);
+
+    if (completedTasks.length===0) {
+        console.log("No completed tasks found.");
+        return;
+    }
+
+    console.log("\nCompleted Tasks:");
+    completedTasks.forEach(task => console.log(`ID: ${task.id}, Description: "${task.description}"`));
+    console.log("");
+}
+
+function listPendingTasks(): void {
+    const pendingTasks = tasks.filter(task => !task.completed);
+
+    if(pendingTasks.length === 0) {
+        console.log("No pending tasks found.");
+        return;
+    }
+
+    console.log("\nPending Tasks:");
+    pendingTasks.forEach(task => console.log(`ID: ${task.id}, Description: "${task.description}"`));
+    console.log("");
 }
 
 loadTasksFromFile();
