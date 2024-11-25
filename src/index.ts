@@ -145,6 +145,7 @@ async function mainMenu(): Promise<void> {
                 "List completed tasks",
                 "List pending tasks",
                 "Mark a task as completed",
+                "Sort tasks",
                 "Exit"
             ]
         }
@@ -168,6 +169,9 @@ async function mainMenu(): Promise<void> {
             break;
         case "Mark a task as completed":
             await handleMarkTaskAsCompleted();
+            break;
+        case "Sort tasks":
+            await handleSortTasks();
             break;
         case "Exit":
             console.log("Goodbye!");
@@ -327,6 +331,32 @@ async function listPendingTasksPaginated(): Promise<void> {
         else if (action === "Next Page") currentPage++;
         else break;
     }
+}
+
+async function handleSortTasks(): Promise<void> {
+    const { sortBy } = await inquirer.prompt([
+        {
+            type: "list",
+            name: "sortBy",
+            message: "Sort tasks by:",
+            choices: ["ID", "Description", "Completed"]
+        }
+    ]);
+
+    const sortKey = sortBy.toLowerCase() as "id" | "description" | "completed";
+    sortTasks(sortKey);
+    console.log(`Tasks sorted by ${sortBy.toLowerCase()}.`);
+    await listTasksPaginated();
+}
+
+function sortTasks(by: "id"|"description"|"completed"): void {
+    tasks.sort((a,b) => {
+        if(by === "id") return a.id - b.id;
+        if (by === "description") return a.description.localeCompare(b.description);
+        if (by === "completed") return Number(a.completed) - Number(b.completed);
+        return 0;
+    });
+    saveTasksToFile();
 }
 
 loadTasksFromFile();
